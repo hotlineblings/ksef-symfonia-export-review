@@ -1,0 +1,68 @@
+
+        INFO{
+        Nazwa programu ='Symfonia XSLT' Symfonia Finanse Ksiêgowoœæ
+        Wersja programu =93
+        Wersja szablonu =3.1
+        }
+        
+        Dokument{
+        
+                rodzajDok = sprzeda¿y
+        
+	KsefNumber = 5252445719-20260116-B2C3D4E5F6A1-8B
+        
+	KSeFDate = 2026-01-16
+        
+	KSeFStatus = approved
+        
+	eArchiveId = 4B8F2A10-9C3D-4E7F-A1B2-C3D4E5F60002
+        
+	Numer = FS/2026/01/0021
+        
+	DataWystawienia = 2026-01-16
+        
+	DataDostawy = 2026-01-16
+        
+	KodWaluty = PLN
+        
+	RodzajFaktury = VAT
+        
+	mppFlags = false
+                wzorzec = 3
+            
+                kurs = 1
+                    Zapis{
+                    strona =WN
+                    kwota =2460
+                    }
+                    Zapis{
+                    strona =MA
+                    kwota =2000
+                    }
+                    Zapis{
+                    strona =MA
+                    kwota =460
+                    }
+                
+                    
+	Kontrahent{
+                    		NIP = 7010001122
+                    		PelnaNazwa = Klient Testowy S.A.
+                    		BrakId = false
+                    		KodKraju = PL
+                    		AdresL1 = ul. Klienta 9
+                    		AdresL2 = 30-300 Krakow
+                    		Email = zakupy@klient-test.pl
+                    		Telefon = 126543210
+                    	}
+                
+                    
+	Rejestr{
+                    		StawkaPodatku = 23
+                    		WartoscNetto = 2000.00
+                    		KwotaVat = 460.00
+                    		KwotaVatKurs = 460.00
+                    	}
+                
+        }
+    

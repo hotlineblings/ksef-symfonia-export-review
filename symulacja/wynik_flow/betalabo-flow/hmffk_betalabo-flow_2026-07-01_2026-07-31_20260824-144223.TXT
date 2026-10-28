@@ -1,0 +1,152 @@
+INFO{
+Wersja szablonu =4
+Wersja_programu =308
+}
+
+Kontrahent{
+id =9100010014
+kod =MERIDOL JAN KOWALSKI
+nazwa =MERIDOL JAN KOWALSKI
+nip =9100010014
+ulica =Testowa
+dom =10B
+kodPocztowy =40-158
+miejscowosc =Katowice
+aktywny =1
+kraj{
+symbol =PL
+}
+}
+
+Kontrahent{
+id =9000000016
+kod =TESTOWY ODBIORCA FLOW SP. Z O.O.
+nazwa =TESTOWY ODBIORCA FLOW SP. Z O.O.
+nip =9000000016
+ulica =Handlowa
+dom =5
+kodPocztowy =30-001
+miejscowosc =Krakow
+aktywny =1
+kraj{
+symbol =PL
+}
+}
+
+dokument{
+obsluguj jak =FVZ
+symbol FK =FVZ
+FK nazwa =TEST-FLOW/1/2026
+rodzaj_dok =zakupu
+naliczenie_VAT =0
+opis FK =Faktura TEST-FLOW/1/2026 - MERIDOL JAN KOWALSKI
+dataWystawieniaObca =2026-07-28
+dataZakupu =2026-07-28
+Datawpl =2026-07-28
+terminPlatnosci =2026-08-11
+kwota =123.00
+KsefNumber =TEST-FLOW-0001
+KSeFDate =2026-07-28
+eArchiveId =C2AD9A94-469D-4DD7-B16B-69757FC60626
+Dane sprzedawcy{
+khid =9100010014
+khnip =9100010014
+khnazwa =MERIDOL JAN KOWALSKI
+khmiasto =Katowice
+KhUlica =Testowa
+KhDomu =10B
+khkodpocz =40-158
+fk_ident =0
+kraj{
+symbol =PL
+}
+}
+rejestr{
+okres =2026-07-28
+netto =100.00
+vat =23.00
+brutto =123.00
+stawka =23
+}
+zapis{
+strona =WN
+kwota =100.00
+}
+zapis{
+strona =MA
+kwota =123.00
+Konto =202-2-5
+NumerDok =TEST-FLOW/1/2026
+IdDlaRozliczen =1
+}
+transakcja{
+idDlaRozliczen =1
+termin =2026-08-11
+kwota =123.00
+}
+zapis{
+strona =WN
+kwota =23.00
+Konto =221-1
+}
+}
+
+dokument{
+obsluguj jak =FVS
+symbol FK =FVS
+FK nazwa =TEST-FLOW/2/2026
+rodzaj_dok =sprzeda¿y
+naliczenie_VAT =0
+opis FK =Faktura TEST-FLOW/2/2026 - TESTOWY ODBIORCA FLOW SP. Z O.O.
+dataWystawienia =2026-07-28
+dataSprzedazy =2026-07-28
+terminPlatnosci =2026-08-11
+kwota =123.00
+KsefNumber =TEST-FLOW-0002
+KSeFDate =2026-07-28
+eArchiveId =6F19B2DC-597C-49D4-AAE3-E8504F51881D
+Dane nabywcy{
+khid =9000000016
+khnip =9000000016
+khnazwa =TESTOWY ODBIORCA FLOW SP. Z O.O.
+khmiasto =Krakow
+KhUlica =Handlowa
+KhDomu =5
+khkodpocz =30-001
+fk_ident =0
+kraj{
+symbol =PL
+}
+}
+rejestr{
+okres =2026-07-28
+netto =100.00
+vat =23.00
+brutto =123.00
+stawka =23
+metoda_vat =0
+}
+zapis{
+strona =WN
+kwota =123.00
+Konto =201-2-34
+NumerDok =TEST-FLOW/2/2026
+IdDlaRozliczen =1
+}
+transakcja{
+idDlaRozliczen =1
+termin =2026-08-11
+kwota =123.00
+}
+zapis{
+strona =MA
+kwota =100.00
+Konto =703
+}
+zapis{
+strona =MA
+kwota =23.00
+Konto =222-1
+}
+}
+

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Syntetyczna FA(3): nabywca unijny bez polskiego NIP (KodUE + NrVatUE), WDT 0%. -->
+<Faktura xmlns="http://crd.gov.pl/wzor/2025/06/25/13775/">
+  <Naglowek>
+    <KodFormularza kodSystemowy="FA (3)" wersjaSchemy="1-0E">FA</KodFormularza>
+    <WariantFormularza>3</WariantFormularza>
+    <DataWytworzeniaFa>2026-05-11T14:00:00Z</DataWytworzeniaFa>
+  </Naglowek>
+  <Podmiot1>
+    <DaneIdentyfikacyjne>
+      <NIP>5252445719</NIP>
+      <Nazwa>Nasza Firma Sp. z o.o.</Nazwa>
+    </DaneIdentyfikacyjne>
+    <Adres>
+      <KodKraju>PL</KodKraju>
+      <AdresL1>ul. Nasza 1</AdresL1>
+      <AdresL2>02-002 Warszawa</AdresL2>
+    </Adres>
+  </Podmiot1>
+  <Podmiot2>
+    <DaneIdentyfikacyjne>
+      <KodUE>DE</KodUE>
+      <NrVatUE>129273398</NrVatUE>
+      <Nazwa>Beispiel GmbH</Nazwa>
+    </DaneIdentyfikacyjne>
+    <Adres>
+      <KodKraju>DE</KodKraju>
+      <AdresL1>Musterstrasse 5</AdresL1>
+      <AdresL2>10115 Berlin</AdresL2>
+    </Adres>
+    <JST>2</JST>
+    <GV>2</GV>
+  </Podmiot2>
+  <Fa>
+    <KodWaluty>PLN</KodWaluty>
+    <P_1>2026-05-11</P_1>
+    <P_2>FS-WDT/2026/05/0009</P_2>
+    <P_6>2026-05-10</P_6>
+    <P_13_6_2>5000.00</P_13_6_2>
+    <P_15>5000.00</P_15>
+    <Adnotacje>
+      <P_16>2</P_16>
+      <P_17>2</P_17>
+      <P_18>2</P_18>
+      <P_18A>2</P_18A>
+      <Zwolnienie>
+        <P_19N>1</P_19N>
+      </Zwolnienie>
+      <NoweSrodkiTransportu>
+        <P_22N>1</P_22N>
+      </NoweSrodkiTransportu>
+      <P_23>2</P_23>
+      <PMarzy>
+        <P_PMarzyN>1</P_PMarzyN>
+      </PMarzy>
+    </Adnotacje>
+    <RodzajFaktury>VAT</RodzajFaktury>
+    <FaWiersz>
+      <NrWierszaFa>1</NrWierszaFa>
+      <P_7>Towar WDT</P_7>
+      <P_11>5000.00</P_11>
+      <P_12>0 WDT</P_12>
+    </FaWiersz>
+  </Fa>
+</Faktura>

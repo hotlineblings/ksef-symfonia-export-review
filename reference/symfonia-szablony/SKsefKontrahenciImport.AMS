@@ -1,0 +1,34 @@
+#opis  "Import kontrahentow z KSeF", "*.TXT (Pliki tekstowe)"  //
+#format  "AMS"  //
+#opisy  ""  //
+#Disable  "2"  //poziom ostrzezen (bez ostrzezenia "Pole nie znalezione")
+#POWIELONE_NAZWY  "0"  //0-zapisuje bez pytania (ponowny import = aktualizacja)
+#DANEKH  "1"
+
+Section("INFO", "")
+{
+	if (!equal([Wersja szablonu], "1.0K"))
+	{
+		if(equal(ASK("Wskazany plik danych wymaga innej wersji szablonu importowego. Czy przerwac import danych? DefBtn:&Tak=10 Btn:&Nie=C ico:?"), "10"))
+			ERROR("Operacja importu zostala przerwana.")
+	}
+}
+
+Section("Kontrahent", "Kontrahent")
+{
+	$klucz       = [klucz]
+	$skrot       = [skrot]
+	$nazwa       = [nazwa]
+	$nip         = [NIP]
+	$kraj        = [KodKraju]
+	$miejscowosc = [Miejscowosc]
+	$kod         = [KodPocztowy]
+	$ulica       = [Ulica]
+	$NumerDomu   = [NrDomu]
+	$NumerMieszk = [NrLokalu]
+	$email       = [Email]
+	$telefon1    = [Telefon]
+	$AdresL1     = [AdresL1]
+	$AdresL2     = [AdresL2]
+	$aktywny     = [aktywny]
+}

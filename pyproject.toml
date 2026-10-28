@@ -1,0 +1,7 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "live: testy wymagające dostępu do produkcyjnego API KSeF (domyślnie pomijane)",
+    "sql: testy wymagające dostępu do żywej bazy SQL Symfonii (domyślnie pomijane)",
+]
+addopts = "-m 'not live and not sql'"

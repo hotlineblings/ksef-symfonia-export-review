@@ -1,0 +1,1512 @@
+#Disable "2"
+#format "AMS"
+
+Section("ksefInvoices", "")
+{
+	Section("ksefInvoice", "", "REPEAT")
+	{
+		MakeSec( "e-Faktura" )
+		{
+            $MultiUzgadnianieTowarow = ""
+            $ExternalImport = ""
+		}
+
+		if (!Cat(Equal([InvoiceType],"VAT"),Equal([InvoiceType],"UPR"),Equal([InvoiceType],"KOR")))
+		{
+			Warning("W tej wersji nie mo¿na importowaæ dokumentów rodzaju faktury: ", [InvoiceType])
+		}
+		else
+		{
+		MakeSec( "DokumentZK" )
+		{
+
+			if (Equal([invoiceBound], "INTERNAL"))
+			{
+				Error("Dokument nie jest dokumentem zakupu!")
+			}
+
+			//pola Ksef
+			$invoiceType = [InvoiceType]		// rodzaj dokumentu : faktura, korekta faktury, inne
+			$$invoiceType = [InvoiceType]
+			$guidEarch = [eArchiveId]
+			$statusKsef = 0 //NOT_KSEF_FORMAT
+            $importDocumentInternalId  = [InternalId]
+			Switch(Translate([KSeFStatus], "L"))
+			{
+				Case "notsent"
+					$statusKsef = 30 //NOT_SENT_TO_KSEF
+					Break
+				Case "sending"
+					$statusKsef = 25 //SENDING
+					Break
+				Case "panding"
+					$statusKsef = 50 //PENDING_FOR_VALIDATION_BY_KSEF
+					Break
+				Case "approved"
+					$statusKsef = 60 //APPROVED_BY_KSEF
+					Break
+				Case "rejected"
+					$statusKsef = 70 //REJECTED_BY_KSEF
+					Break
+				Case "error"
+					$statusKsef = 40 //ERROR
+					Break
+				Case "importedfromfile"
+					$statusKsef = 90 //ZaimportowanyZPliku
+			}
+			$$dataWystawieniaKsef = [KSeFDate]
+			$numberKsef = [KsefNumber]
+
+			$$rodzajCeny = -1
+			$$kurs = 0			
+			$$kursPrzedKorekta = 0			
+			$$kursPoKorekcie = 0
+			if (!Equal($guidEarch, "00000000-0000-0000-0000-000000000000"))
+			{
+				$guid = $guidEarch
+			}
+			else
+			{
+				$guidEarch = ""
+			}
+
+			$nadawca_jako_kh = 1 //bierze z sekcji Kontrahent dla dokumentu
+			$nadawca_jako_od = 1
+			
+			$JPK_V7 = ""
+			$$vatMarza = 0
+			
+			Section("invoice", "")
+			{
+				
+				Section("", "", "REPEAT")
+				{
+					Switch(Name())
+					{
+						Case "Sprzedawca"
+							MakeSec("Kontrahent")
+							{
+								$email = [Email]
+								$telefon1 = [Telefon]
+								// [PrefixPodatnika]
+								// [NrEORI]
+
+								//$VIES
+								//$nazwaBanku
+								//$numerRachunku 
+								//$jednostkaPowiazana
+								//$regon
+								//$osfiz
+								//$podatnikVAT
+
+								Section("", "", "REPEAT")
+								{
+									Switch(Name())
+									{
+										Case "DaneIdentyfikacyjne"
+											$nip = [NIP]
+											$pesel = [Pesel]
+											$imie = [ImiePierwsze]
+											$nazwisko = [Nazwisko]
+											$nazwa = [PelnaNazwa]
+											if(Equal($nazwa, ""))
+											{
+												$nazwa = Cat($nazwisko, " ", $imie)
+											}
+
+											Break
+										Case "Adres"
+											$ulica = [Ulica]
+											$dom = [NrDomu]
+											$lokal = [NrLokalu]
+											$miejscowosc = [Miejscowosc]
+											$kodPocztowy = [KodPocztowy]
+											$krajKod = [KodKraju]
+											// [Poczta]
+											// [GLN]
+											// [Powiat]
+											// [Gmina]
+											If(Exist("Wojewodztwo"))
+											{
+												$rejon = [Wojewodztwo]
+											}
+											Break
+										Case "StatusPodatnika"
+											// [WLikwidcji]
+											// [WPostepowaniuRestr]
+											// [WUpdalosci]
+											// [WSpadku]
+											Break
+									}
+								}
+								$kod = Cat($nazwisko, " ", $imie)
+								If(Equal($kod, " "))
+								{
+									$kod = $nazwa
+								}								
+								Info("Kontrahent: ", $kod)
+							}
+							Break
+						Case "Nabywca"
+							Break
+						Case "TrzeciPodmiot"
+							Break
+						Case "Naglowek"
+							Info( "Pobranie dokumentu z modu³u KSeF '", [Numer], "' do bufora dokumentów zakupu." )
+							$$waluta = [KodWaluty]
+							$typDk = Cat([RodzajFaktury], $$waluta)
+							$seria = $typDk
+							$rejestrVAT = $typDk
+
+							$naliczanieVAT = 0	// 0 - Iloczynowe, 1 - Sumacyjne
+
+							// [MiejsceWystaw]
+							// [SystemInfo]
+							$kwotabrutto = [KwotaBrutto]
+							// [FP]
+							// [TP]
+
+							$numerObcy = [Numer]
+							$dataWystawieniaObca = [DataWystawienia]
+							$dataZakupu = [DataDostawy]
+							$dataWplywu = $$dataWystawieniaKsef
+							
+							MakeSec("Waluta")
+							{
+								Info("  Waluta: ", $$waluta)
+								$kod = $$waluta
+								//$nazwa = [KodWaluty]
+								$przelicznik = 1
+								$SprawdzPrzelicznik = 1
+							}
+
+							$waluta = $$waluta
+
+							//$dataWystawienia 
+							//$WhiteList
+							//$ForceSP
+							//$odebranyPrzez
+							//$rejestrVATnalezny
+							//$JPK_V7
+
+							Section("DodatkowyOpis", "")
+							{
+								Section("DodatkowyOpisType", "", "REPEAT")
+								{
+									if(Equal([Key], "Opis")) 
+									{
+										$opis = [Value]
+									}
+								}
+							}
+							
+							Break
+
+						Case "Adnotacje"
+							if (Equal(Translate([Samofakturowanie], "L"), "true"))
+							{
+								Error("Nie mo¿na importowaæ dokumentów oznaczonych jako Samofakturowanie")
+							}
+							if (Equal(Translate([MetodaKasowa], "L"), "true"))
+							{
+								$metodaRoz = 1		// Kasowa
+								$JPK_V7 = Cat($JPK_V7, "MK,")
+							}
+							else
+							{
+								$metodaRoz = 0		// Memoria³owa
+							}
+							if (Equal(Translate([PodzielonaPlatnosc], "L"), "true"))
+							{
+								$splitPayment = 1
+								$JPK_V7 = Cat($JPK_V7, "MPP,")
+							}
+							if (Equal(Translate([ProceduraMarzy], "L"), "true"))
+							{
+								$$vatMarza = 1
+							}
+
+							Break
+						Case "Korekta"
+							MakeSec("Korekta")
+							{
+								Section("FaKorygowana", "FaKorygowana")
+								{
+									Section("DaneFaKorygowanej","DaneFaKorygowanej")
+									{
+										$dataWystFaKorygowanej = [DataWystFaKorygowanej]
+										$nrFaKorygowanej = [NrFaKorygowanej]
+										$NrKSeFFaKorygowanej = [NrKSeFFaKorygowanej]
+									}
+								}
+							}
+							Break
+						Case "PodsumowanieVat"
+							Section("PodsumowanieVat", "Wartosc VAT", "REPEAT")
+							{
+								if (Equal($$waluta, "PLN"))	
+								{
+									$wartosc = [KwotaVat]
+								}		
+								else
+								{
+									$wartosc = [KwotaVatKurs]
+								}
+								$wartoscnetto = [WartoscNetto]
+							}
+							Break
+						Case "Wiersze"
+							Section("Wiersz", "Pozycja dokumentu", "REPEAT")
+							{
+								if(!Equal($$vatMarza, 1)) //przy vat marza nie jest przekazywana stawka vat
+								{
+									$$stVAT = Rex([StawkaPodatku], "[0-9][0-9]")
+									if (Not($$stVAT))
+									{
+										$$stVAT = Rex([StawkaPodatku], "[0-9]")
+									}
+									if (Not($$stVAT))
+									{
+										$$stVAT = Rex([StawkaPodatku], "[zZ][wW]")
+										if (Not($$stVAT))
+										{
+											$$stVAT = Rex([StawkaPodatku], "[nN][pP]")
+										}
+									}
+									else
+									{
+										$$stVAT = Cat($$stVAT, "%")
+									}
+									MakeSec( "StawkaVAT")
+									{
+										$nazwa = $$stVAT
+									}
+								}
+								else
+								{
+									$$stVAT = "NP" //dla vat marza ustawiamy na NP
+								}
+
+								Info("  Pozycja towarowa: ", [Nazwa], ",  Stawka VAT: ", $$stVAT, ",  Iloœæ: ", [Ilosc], " ", [JM])
+								MakeSec("Towar")
+								{
+                                    $polaWyszukiwaniaTowaru = "kod;kodPaskowy"
+									if (Exist("DodatkoweInfo"))
+									{
+    									$kod = [DodatkoweInfo]
+									}
+                                    else
+                                    {
+    									$kod = [Nazwa]
+                                    }
+									$kodPaskowy = [GTIN]
+									$pkwiu = [PKWIU]
+									$pcn = [CN]
+									MakeSec("Nazwa_Dl")
+									{
+										$opis = [Nazwa]
+									}
+									MakeSec("stVAT")
+									{
+										$kod = $$stVAT
+									}
+									// Artyku³:	$subtyp = 0, $typext = 0;  Us³uga: $subtyp = 1, $typext = 1; Us³uga mar¿a:	$subtyp = 0, $typext = 4
+									$subtyp = 0
+									$typext = 0
+
+									$jm = [JM]
+									//$odwrotneObc = $$odwrotneObc
+									//$mpp = $$mpp
+									//vat50
+									//$JPK_V7 = [JPK_V7]
+								}
+
+								if (Exist("DodatkoweInfo"))
+								{
+    								$kod = [DodatkoweInfo]
+								}
+                                else
+                                {
+    								$kod = [Nazwa]
+                                }
+								MakeSec("Nazwa_Dl")
+								{
+									$opis = [Nazwa]	
+								}
+								$ilosc_ewid = [Ilosc]
+								$ilosc = [Ilosc]
+								//$przelicznik
+								$jednostkaMiary = [JM]
+								$PKWiU = [PKWIU]
+								//$clo
+								//$cena_wal
+
+								if (Equal($$rodzajCeny, -1))
+								{
+									$$rodzajCeny = 0
+									if (Exist("CenaNetto"))
+									{
+										if (!Equal([CenaNetto], ""))
+										{
+											$$rodzajCeny = 2
+										}
+									}
+									if (Equal($$rodzajCeny, 0))
+									{
+										if (Exist("CenaBrutto"))
+										{
+											$$rodzajCeny = 1
+										}
+									}
+								}
+								Switch ($$rodzajCeny)
+								{
+									Case 1
+										$cena = [CenaBrutto]
+										$wartosc = [WartoscBrutto]
+										Break
+									Case 2
+										$cena = [CenaNetto]
+										$wartosc = [WartoscNetto]
+										Break
+								}
+								if([KwotaAkcyzy])
+								{
+									$akcyza = [KwotaAkcyzy]
+								}
+								MakeSec("stVAT")
+								{
+									$kod = $$stVAT
+								}
+								// [KwotaOpustu]
+								// [GTU]
+								// [PKOB]
+								// [GTIN]
+								// [DataDostawy]
+								// [UnikalnyNumer]
+								// [DodatkoweInfo]
+								if(Equal($$kurs, 0))
+								{
+									$$kurs = [KursWaluty]
+								}
+								Info("  UWAGA: pozycje korekty faktury ustrukturyzowanej w wersji 1 mog¹ byæ b³êdnie zaimportowane !")
+							}
+							Break
+						Case "Rozliczenie"
+							// [KwotaObciazenia]
+							// [PowodObciazenia]
+							// [KwotaOdliczenia]
+							// [PowodOdliczenia]
+							Break
+						Case "Platnosc"
+							// [Zaplacono]
+							// [DataZaplaty]
+							// [PlatnoscInna]
+							// [OpisPlatnosci]
+							MakeSec( "rejestr" )
+							{
+								$kod = Cat([FormaPlatnosci]," ", $$Waluta)
+							}
+							MakeSec( "formaPl" )
+							{
+								$nazwa = [FormaPlatnosci]
+								//$termin = "0"
+							}
+							
+							Section("", "", "REPEAT")
+							{
+								Switch(Name())
+								{
+									Case "RachunekBankowy"
+										Section("TRachunekBankowy", "", "REPEAT")
+										{
+											$rachunekBankowy = [NrRBPL]
+											if (Equal($rachunekBankowy, ""))
+											{
+												$rachunekBankowy = [NrRBZagr]
+											}
+											// [SWIFT]
+											$nazwaBanku = [NazwaBanku]
+											Info("  Rachunek bankowy: ", $rachunekBankowy, " ", $nazwaBanku)
+										}
+										Break
+									Case "TerminPlatnosci"
+										Section("TTerminPlatnosci", "", "REPEAT")
+										{
+											if (Equal($terminPlatnosci, ""))
+											{
+												$terminPlatnosci = [TerminPlatnosci]
+											}
+											// [TerminPlatnosciOpis]
+										}
+										Break
+									Case "ZaplataCzesciowa"
+										Section("TZaplataCzesciowa", "", "REPEAT")
+										{
+											// [Data]
+											// [Kwota]
+										}
+										Break
+								}
+							}
+							Break
+						Case "WarunkiTransakcji"
+							Break
+						Case "Zamowienie"
+							// [Wartosc]
+							//Section("Wiersze", "", "REPEAT") { wg Case Wiersz }
+							Break
+						Case "Stopka"
+							$$notatka = ""
+							Section("Informacje", "", "REPEAT") 
+							{ 
+								$$notatka = CAT($$notatka, [Informacje], " ")
+							}
+							MakeSec("Notatka_Dl")
+							{
+								$opis = $$notatka
+							}
+							// [PelnaNazwa]
+							// [KRS]
+							// [REGON]
+							// [BDO]
+							Break
+						Case Else
+							Warning("Nierozpoznana sekcja: ", Name())
+					}
+				}
+				Switch ($$rodzajCeny)
+				{
+					Case "1"	// Brutto
+					Case "2"	// Netto
+						$rodzajCeny = $$rodzajCeny
+						Break
+					Case Else
+						Warning("Nieropoznany rodzaj ceny.")
+				}
+				if (!Equal($$kurs, 0))
+				{
+					$kurs = $$kurs
+					$kursDoch = $$kurs
+				}
+			}
+			//invoiceV2
+			Section("invoiceV2", "")
+			{				
+				Section("", "", "REPEAT")
+				{
+					Switch(Name())
+					{
+						Case "Sprzedawca"
+							MakeSec("Kontrahent")
+							{
+								// [PrefixPodatnika]
+								// [NrEORI]
+								// [NrKlienta]
+								// [IdNabywcy]
+
+								Section("", "", "REPEAT")
+								{
+									Switch(Name())
+									{
+										Case "Adres"
+											$krajKod = [KodKraju]
+											// [AdresL1]
+											// [AdresL2]
+											// [GLN]
+											Break
+										Case "DaneIdentyfikacyjne"
+											$nip = [NIP]
+											$nazwa = [PelnaNazwa]
+											//KodUe
+											//NrVatUe
+											//KodKraju
+											//if (Equal(Translate([BrakId], "L"), "false"))
+											//{
+											//	//NrId
+											//}
+											Break
+										Case "StatusPodatnika"
+											// [WLikwidcji]
+											// [WPostepowaniuRestr]
+											// [WUpdalosci]
+											// [WSpadku]
+											Break
+										Case "DaneKontaktowe"
+											Section("", "", "REPEAT")
+											{			
+												$email = [Email]
+												$telefon1 = [Telefon]												
+											}
+											Break
+									}
+								}
+								$kod = $nazwa								
+								Info("Kontrahent: ", $kod)
+							}
+							Break
+						Case "Nabywca"
+							Break
+						Case "TrzeciPodmiot"
+							Break
+						Case "Naglowek"
+							Info( "Pobranie dokumentu z modu³u KSeF '", [Numer], "' do bufora dokumentów zakupu." )
+							$$waluta = [KodWaluty]
+							$typDk = Cat([RodzajFaktury], $$waluta)
+							$seria = $typDk
+							$rejestrVAT = $typDk
+
+							$naliczanieVAT = 0	// 0 - Iloczynowe, 1 - Sumacyjne
+
+							// [MiejsceWystaw]
+							// [SystemInfo]
+							$kwotabrutto = [KwotaBrutto]
+							// [FP]
+							// [TP]
+							// [ZwrotAkcyzy]
+							// [OkresFaktury]
+							// [KursWalutyZaliczka]
+							// [FakturaZaliczkowa]
+							// [ZaliczkaCzesciowa]
+
+							$numerObcy = [Numer]
+							$dataWystawieniaObca = [DataWystawienia]
+							$dataZakupu = [DataDostawy]
+							$dataWplywu = $$dataWystawieniaKsef
+							
+							MakeSec("Waluta")
+							{
+								Info("  Waluta: ", $$waluta)
+								$kod = $$waluta
+								//$nazwa = [KodWaluty]
+								$przelicznik = 1
+								$SprawdzPrzelicznik = 1
+							}
+
+							$waluta = $$waluta
+
+							Section("DodatkowyOpis", "")
+							{
+								Section("DodatkowyOpisPolaV2", "", "REPEAT")
+								{
+									if(Equal([Klucz], "Opis")) 
+									{
+										$opis = [Wartosc]
+									}
+								}
+							}
+							
+							Break
+
+						Case "Adnotacje"
+							if (Equal(Translate([MetodaKasowa], "L"), "true"))
+							{
+								$metodaRoz = 1		// Kasowa
+								$JPK_V7 = Cat($JPK_V7, "MK,")
+							}
+							if (Equal(Translate([Samofakturowanie], "L"), "true"))
+							{
+								Error("Nie mo¿na importowaæ dokumentów oznaczonych jako Samofakturowanie")
+							}
+							else
+							{
+								$metodaRoz = 0		// Memoria³owa
+							}
+							// [OdwrotneObciazenie]
+							if (Equal(Translate([PodzielonaPlatnosc], "L"), "true"))
+							{
+								$splitPayment = 1
+								$JPK_V7 = Cat($JPK_V7, "MPP,")
+							}
+							//[ZwolnieniaPodmiotowe]
+							//[ProceduraUproszczona]
+							if (Equal(Translate([ProceduraMarzy], "L"), "true"))
+							{
+								$$vatMarza = 1
+							}
+
+							Break
+						Case "Korekta"
+							MakeSec("Korekta")
+							{
+								Section("FaKorygowana", "FaKorygowana")
+								{
+									Section("DaneFaKorygowanejV2","DaneFaKorygowanej")
+									{
+										$dataWystFaKorygowanej = [DataWystFaKorygowanej]
+										$nrFaKorygowanej = [NrFaKorygowanej]
+										$NrKSeFFaKorygowanej = [NrKSeFFaKorygowanej]
+									}
+								}
+							}
+							$opis = [PrzyczynaKorekty]
+							Break
+						Case "PodsumowanieVat"
+							Section("PodsumowanieVatV2", "Wartosc VAT", "REPEAT")
+							{
+								$$stVAT = Rex([StawkaPodatku], "[0-9][0-9]")
+								if (Not($$stVAT))
+								{
+									$$stVAT = Rex([StawkaPodatku], "[0-9]")
+								}
+								if (Not($$stVAT))
+								{
+									$$stVAT = Rex([StawkaPodatku], "[zZ][wW]")
+									if (Not($$stVAT))
+									{
+										$$stVAT = Rex([StawkaPodatku], "[nN][pP]")
+									}
+								}
+								else
+								{
+									$$stVAT = Cat($$stVAT, "%")
+								}
+								$kod = $$stVAT
+								if (Equal($$waluta, "PLN"))	
+								{
+									$wartosc = [KwotaVat]
+								}		
+								else
+								{
+									$wartosc = [KwotaVatKurs]
+								}
+								$wartoscnetto = [WartoscNetto]
+							}
+							Break
+						Case "Wiersze"
+							Section("WierszV2", "Pozycja dokumentu", "REPEAT")
+							{
+								if(!Equal($$vatMarza, 1)) //przy vat marza nie jest przekazywana stawka vat
+								{
+									$$stVAT = Rex([StawkaPodatku], "[0-9][0-9]")
+									if (Not($$stVAT))
+									{
+										$$stVAT = Rex([StawkaPodatku], "[0-9]")
+									}
+									if (Not($$stVAT))
+									{
+										$$stVAT = Rex([StawkaPodatku], "[zZ][wW]")
+										if (Not($$stVAT))
+										{
+											$$stVAT = Rex([StawkaPodatku], "[nN][pP]")
+										}
+									}
+									else
+									{
+										$$stVAT = Cat($$stVAT, "%")
+									}
+									MakeSec( "StawkaVAT")
+									{
+										$nazwa = $$stVAT
+									}
+								}
+								else
+								{
+									$$stVAT = "NP" //dla vat marza ustawiamy na NP
+								}
+
+								Info("  Pozycja towarowa: ", [Nazwa], ",  Stawka VAT: ", $$stVAT, ",  Iloœæ: ", [Ilosc], " ", [JM])
+								MakeSec("Towar")
+								{
+                                    $polaWyszukiwaniaTowaru = "kod;kodPaskowy"
+									if (Exist("DodatkoweInfo"))
+									{
+    									$kod = [DodatkoweInfo]
+									}
+                                    else
+                                    {
+    									$kod = [Nazwa]
+                                    }
+									$kodPaskowy = [GTIN]
+									$pkwiu = [PKWIU]
+									$pcn = [CN]
+									MakeSec("Nazwa_Dl")
+									{
+										$opis = [Nazwa]
+									}
+									MakeSec("stVAT")
+									{
+										$kod = $$stVAT
+									}
+									// Artyku³:	$subtyp = 0, $typext = 0;  Us³uga: $subtyp = 1, $typext = 1; Us³uga mar¿a:	$subtyp = 0, $typext = 4
+									$subtyp = 0
+									$typext = 0
+
+									$jm = [JM]
+									//$odwrotneObc = $$odwrotneObc
+									//$mpp = $$mpp
+									//vat50
+									//$JPK_V7 = [JPK_V7]
+								}
+
+								if (Exist("DodatkoweInfo"))
+								{
+    								$kod = [DodatkoweInfo]
+								}
+                                else
+                                {
+    								$kod = [Nazwa]
+                                }
+								MakeSec("Nazwa_Dl")
+								{
+									$opis = [Nazwa]	
+								}
+								$ilosc_ewid = [Ilosc]
+								$ilosc = [Ilosc]
+								//$przelicznik
+								$jednostkaMiary = [JM]
+								$PKWiU = [PKWIU]
+								//$clo
+								//$cena_wal
+
+								if (Equal($$rodzajCeny, -1))
+								{
+									$$rodzajCeny = 0
+									if (Exist("CenaNetto"))
+									{
+										if (!Equal([CenaNetto], ""))
+										{
+											$$rodzajCeny = 2
+										}
+									}
+									if (Equal($$rodzajCeny, 0))
+									{
+										if (Exist("CenaBrutto"))
+										{
+											$$rodzajCeny = 1
+										}
+									}
+								}
+								Switch ($$rodzajCeny)
+								{
+									Case 1
+										$cena = [CenaBrutto]
+										$wartosc = [WartoscBrutto]
+										Break
+									Case 2
+										$cena = [CenaNetto]
+										$wartosc = [WartoscNetto]
+										Break
+								}
+								if([KwotaAkcyzy])
+								{
+									$akcyza = [KwotaAkcyzy]
+								}
+								MakeSec("stVAT")
+								{
+									$kod = $$stVAT
+								}
+								// [KwotaOpustu]
+								// [GTU]
+								// [PKOB]
+								// [GTIN]
+								// [DataDostawy]
+								// [UnikalnyNumer]
+								// [DodatkoweInfo]
+								if(Equal($$kurs, 0))
+								{
+									$$kurs = [KursWaluty]
+								}
+								// [ZnacznikTowaruLubUslugi]
+								// [WartoscVat]
+								$czyPoKorekcie=1
+								If (Exist("StanPrzed"))
+								{
+									if (Equal([StanPrzed], "true"))
+									{
+										$czyPoKorekcie=0
+									}
+								}
+								if(Equal($$invoiceType, "KOR"))
+								{
+									if(Equal($czyPoKorekcie, 0))
+									{
+										Info("     przed korekt¹")
+									}
+									else
+									{
+										Info("     po korekcie")
+									}
+								}
+							}
+							Break
+						Case "Rozliczenie"
+							// [KwotaObciazenia]
+							// [PowodObciazenia]
+							// [KwotaOdliczenia]
+							// [PowodOdliczenia]
+							Break
+						Case "Platnosc"
+							// [ZnacznikZaplatyCzesciowej]
+							// [Zaplacono]
+							// [DataZaplaty]
+							// [PlatnoscInna]
+							// [OpisPlatnosci]
+							MakeSec( "rejestr" )
+							{
+								$kod = Cat([FormaPlatnosci]," ", $$Waluta)
+							}
+							MakeSec( "formaPl" )
+							{
+								$nazwa = [FormaPlatnosci]
+								//$termin = "0"
+							}
+							
+							Section("", "", "REPEAT")
+							{
+								Switch(Name())
+								{
+									Case "RachunekBankowy"
+										Section("TRachunekBankowyV2", "", "REPEAT")
+										{
+											$rachunekBankowy = [NrRBPL]
+											if (Equal($rachunekBankowy, ""))
+											{
+												$rachunekBankowy = [NrRBZagr]
+											}
+											// [SWIFT]
+											$nazwaBanku = [NazwaBanku]
+											// [RachunekWlasnyBanku]
+											// [OpisRachunku]
+											Info("  Rachunek bankowy: ", $rachunekBankowy, " ", $nazwaBanku)
+										}
+										Break
+									Case "TerminPlatnosci"
+										Section("TTerminPlatnosciV2", "", "REPEAT")
+										{
+											if (Equal($terminPlatnosci, ""))
+											{
+												$terminPlatnosci = [TerminPlatnosci]
+											}
+											// [TerminPlatnosciOpis]
+										}
+										Break
+									Case "ZaplataCzesciowa"
+										Section("TZaplataCzesciowaV2", "", "REPEAT")
+										{
+											// [Data]
+											// [Kwota]
+										}
+										Break
+								}
+							}
+							Break
+						Case "WarunkiTransakcji"
+							Break
+						Case "Zamowienie"
+							Break
+						Case "Stopka"
+							$$notatka = ""
+							Section("Informacje", "", "REPEAT") 
+							{ 
+								$$notatka = CAT($$notatka, [Informacje], " ")
+							}
+							MakeSec("Notatka_Dl")
+							{
+								$opis = $$notatka
+							}
+							//Case "Rejestry"
+							//	Section("StopkaRejestrV2", "", "REPEAT")
+							//	{
+									// [PelnaNazwa]
+									// [KRS]
+									// [REGON]
+									// [BDO]
+							//	}
+							// Break
+							Break
+						Case Else
+							Warning("Nierozpoznana sekcja: ", Name())
+					}
+				}
+				Switch ($$rodzajCeny)
+				{
+					Case "1"	// Brutto
+					Case "2"	// Netto
+						$rodzajCeny = $$rodzajCeny
+						Break
+					Case Else
+						Warning("Nieropoznany rodzaj ceny.")
+				}
+				if (!Equal($$kurs, 0))
+				{
+					$kurs = $$kurs
+					$kursDoch = $$kurs
+				}
+			}
+			//invoiceV2 END
+			//invoiceV3
+			Section("invoiceV3", "")
+			{		
+				Section("", "", "REPEAT")
+				{
+					Switch(Name())
+					{
+						Case "Sprzedawca"
+							MakeSec("Kontrahent")
+							{
+								// [PrefixPodatnika]
+								// [NrEORI]
+								// [NrKlienta]
+								// [IdNabywcy]
+
+								Section("", "", "REPEAT")
+								{
+									Switch(Name())
+									{
+										Case "Adres"
+											$krajKod = [KodKraju]
+											// [AdresL1]
+											// [AdresL2]
+											// [GLN]
+											Break
+										Case "DaneIdentyfikacyjne"
+											$nip = [NIP]
+											$nazwa = [PelnaNazwa]
+											//KodUe
+											//NrVatUe
+											//KodKraju
+											//if (Equal(Translate([BrakId], "L"), "false"))
+											//{
+											//	//NrId
+											//}
+											Break
+										Case "StatusPodatnika"
+											// [WLikwidcji]
+											// [WPostepowaniuRestr]
+											// [WUpdalosci]
+											// [WSpadku]
+											Break
+										Case "DaneKontaktowe"
+											Section("", "", "REPEAT")
+											{			
+												$email = [Email]
+												$telefon1 = [Telefon]												
+											}
+											Break
+									}
+								}
+								$kod = $nazwa								
+								Info("Kontrahent: ", $kod)
+							}
+							Break
+						Case "Nabywca"
+							Break
+						Case "TrzeciPodmiot"
+							Break
+						Case "Naglowek"
+							Info( "Pobranie dokumentu z modu³u KSeF '", [Numer], "' do bufora dokumentów zakupu." )
+							$$waluta = [KodWaluty]
+							$typDk = Cat([RodzajFaktury], $$waluta)
+							$seria = $typDk
+							$rejestrVAT = $typDk
+
+							$naliczanieVAT = 0	// 0 - Iloczynowe, 1 - Sumacyjne
+
+							// [MiejsceWystaw]
+							// [SystemInfo]
+							$kwotabrutto = [KwotaBrutto]
+							// [FP]
+							// [TP]
+							// [ZwrotAkcyzy]
+							// [OkresFaktury]
+							// [KursWalutyZaliczka]
+							// [FakturaZaliczkowa]
+							// [ZaliczkaCzesciowa]
+
+							$numerObcy = [Numer]
+							$dataWystawieniaObca = [DataWystawienia]							
+							$dataWplywu = $$dataWystawieniaKsef
+
+                            Section("", "", "REPEAT")
+						    {
+                                Switch(Name())
+							    {
+                                    Case "OkresFaktury"
+                                        if([DataDo])
+                                        {
+                                            $$dataZakupu = [DataDo]
+                                        }
+                                    Break
+                                }
+                            }
+
+                            if (Not($$dataZakupu))
+                            {
+                                $$dataZakupu = [DataDostawy]
+                            }
+                            if (Not($$dataZakupu))
+                            {
+                                $$dataZakupu = [DataWystawienia]
+                            }
+                            $dataZakupu = $$dataZakupu
+							
+							MakeSec("Waluta")
+							{
+								Info("  Waluta: ", $$waluta)
+								$kod = $$waluta
+								//$nazwa = [KodWaluty]
+								$przelicznik = 1
+								$SprawdzPrzelicznik = 1
+							}
+
+							$waluta = $$waluta
+
+							Section("DodatkowyOpis", "")
+							{
+								Section("DodatkowyOpisPolaV3", "", "REPEAT")
+								{
+									if(Equal([Klucz], "Opis")) 
+									{
+										$opis = [Wartosc]
+									}
+								}
+							}
+							
+							Break
+
+						Case "Adnotacje"
+							if (Equal(Translate([MetodaKasowa], "L"), "true"))
+							{
+								$metodaRoz = 1		// Kasowa
+								$JPK_V7 = Cat($JPK_V7, "MK,")
+							}
+							if (Equal(Translate([Samofakturowanie], "L"), "true"))
+							{
+								Error("Nie mo¿na importowaæ dokumentów oznaczonych jako Samofakturowanie")
+							}
+							else
+							{
+								$metodaRoz = 0		// Memoria³owa
+							}
+							if (Equal(Translate([OdwrotneObciazenie], "L"), "true"))
+							{
+								$rejestrVATnalezny = Cat($typDk, "NAL")
+							}                            
+							if (Equal(Translate([PodzielonaPlatnosc], "L"), "true"))
+							{
+								$splitPayment = 1
+								$JPK_V7 = Cat($JPK_V7, "MPP,")
+							}
+							//[ZwolnieniaPodmiotowe]
+							//[ProceduraUproszczona]
+							if (Equal(Translate([ProceduraMarzy], "L"), "true"))
+							{
+								$$vatMarza = 1
+							}
+
+							Break
+						Case "Korekta"
+							MakeSec("Korekta")
+							{
+								Section("FaKorygowana", "FaKorygowana")
+								{
+									Section("DaneFaKorygowanejV3","DaneFaKorygowanej")
+									{
+										$dataWystFaKorygowanej = [DataWystFaKorygowanej]
+										$nrFaKorygowanej = [NrFaKorygowanej]
+										$NrKSeFFaKorygowanej = [NrKSeFFaKorygowanej]
+									}
+								}
+							}
+							$opis = [PrzyczynaKorekty]
+							Break
+						Case "PodsumowanieVat"
+							Section("PodsumowanieVatV3", "Wartosc VAT", "REPEAT")
+							{
+								$$stVAT = Rex([StawkaPodatku], "[0-9][0-9]")
+								if (Not($$stVAT))
+								{
+									$$stVAT = Rex([StawkaPodatku], "[0-9]")
+								}
+								if (Not($$stVAT))
+								{
+									$$stVAT = Rex([StawkaPodatku], "[zZ][wW]")
+									if (Not($$stVAT))
+									{
+										$$stVAT = Rex([StawkaPodatku], "[nN][pP]")
+									}
+								}
+								else
+								{
+									$$stVAT = Cat($$stVAT, "%")
+								}
+								$kod = $$stVAT
+								if (Equal($$waluta, "PLN"))	
+								{
+									$wartosc = [KwotaVat]
+								}		
+								else
+								{
+									$wartosc = [KwotaVatKurs]
+								}
+								$wartoscnetto = [WartoscNetto]
+							}
+							Break
+						Case "Wiersze"
+							Section("WierszV3", "Pozycja dokumentu", "REPEAT")
+							{
+                                // przepnij kategoriê podatku dla specyficznych stawek
+                                if (Cat(
+                                    Equal([StawkaPodatku], "VAT_0_KR"),
+                                    Equal([StawkaPodatku], "VAT_0_WDT"),
+                                    Equal([StawkaPodatku], "VAT_0_EX"),
+                                    Equal([StawkaPodatku], "VAT_NP_I"),
+                                    Equal([StawkaPodatku], "VAT_NP_II")))
+                                {
+                                    $strKatPodatkowa = [StawkaPodatku]
+                                }
+
+								if(!Equal($$vatMarza, 1)) //przy vat marza nie jest przekazywana stawka vat
+								{
+									$$stVAT = Rex([StawkaPodatku], "[0-9][0-9]")
+									if (Not($$stVAT))
+									{
+										$$stVAT = Rex([StawkaPodatku], "[0-9]")
+									}
+									if (Not($$stVAT))
+									{
+										$$stVAT = Rex([StawkaPodatku], "[zZ][wW]")
+										if (Not($$stVAT))
+										{
+											$$stVAT = Rex([StawkaPodatku], "[nN][pP]")
+										}
+									}
+									else
+									{
+										$$stVAT = Cat($$stVAT, "%")
+									}
+                                    if (Equal([StawkaPodatku], "VAT_OO"))
+                                    {
+                                        $$stVAT = "NP" //oo - importujemy ze stawk¹ “NP”
+                                        $odwrotneObc = 1
+                                        $katPodatkowa = 0
+                                    }
+									MakeSec( "StawkaVAT")
+									{
+										$nazwa = $$stVAT
+									}
+								}
+								else
+								{
+									$$stVAT = "NP" //dla vat marza ustawiamy na NP
+                                    $katPodatkowa = 0
+								}
+
+								Info("  Pozycja towarowa: ", [Nazwa], ",  Stawka VAT: ", $$stVAT, ",  Iloœæ: ", [Ilosc], " ", [JM])
+
+                                //do kodu trafia INDEX lub nazwa z pozycji
+								if (Exist("DodatkoweInfo"))
+								{
+    								$$kodTowaru = [DodatkoweInfo]
+								}
+                                else
+                                {
+    								$$kodTowaru = [Nazwa]
+                                }
+
+                                //kod obcy który trafia do uzgodnienia
+								if (Exist("GTIN"))
+								{
+    								$$kluczTowaru = Cat([GTIN], ";", $$kodTowaru)
+								}
+                                else
+                                {
+    								$$kluczTowaru = $$kodTowaru
+                                }
+
+								MakeSec("Towar")
+								{
+                                    // 0 - Pytaj, 
+                                    // 1 - Aktualizuj (bez pytania), 
+                                    // 2 - Nie aktualizuj przy u¿yciu istniej¹cego uzgodnienia, 
+                                    // 3 - Nie aktualizuj i nie pytaj tak¿e przy tworzeniu uzgodnienia
+                                    $trybInterakcji = 2
+
+                                    // pola do wyszukiwania towaru przy tworzeniu uzgodnienia, rozdzielone znakiem ;
+                                    // w przypadku znalezienia czegokolwiek po danym polu, szukanie po kolejnych polach jest pomijane
+                                    // znak + oznacza ¿e w przypadku znalezienia tylko jednego elementu jest on automatycznie wybierany,
+                                    $polaWyszukiwaniaTowaru = "kodPaskowy+;kod"
+
+                                    $klucz = $$kluczTowaru
+    								$kod = $$kodTowaru
+
+									$kodPaskowy = [GTIN]
+									$pkwiu = [PKWIU]
+									$pcn = [CN]
+									MakeSec("Nazwa_Dl")
+									{
+										$opis = [Nazwa]
+									}
+									MakeSec("stVAT")
+									{
+										$kod = $$stVAT
+									}
+									// Artyku³:	$subtyp = 0, $typext = 0;  Us³uga: $subtyp = 1, $typext = 1; Us³uga mar¿a:	$subtyp = 0, $typext = 4
+									$subtyp = 0
+									$typext = 0
+
+									$jm = [JM]
+									//$odwrotneObc = $$odwrotneObc
+									//$mpp = $$mpp
+									//vat50
+									//$JPK_V7 = [JPK_V7]
+								}
+
+                                $klucz = $$kluczTowaru
+    							$kod = $$kodTowaru
+                                $lp = [Lp]
+
+								MakeSec("Nazwa_Dl")
+								{
+									$opis = [Nazwa]	
+								}
+								$ilosc_ewid = [Ilosc]
+								$ilosc = [Ilosc]
+								//$przelicznik
+								$jednostkaMiary = [JM]
+								$PKWiU = [PKWIU]
+								//$clo
+								//$cena_wal
+
+								if (Equal($$rodzajCeny, -1))
+								{
+									$$rodzajCeny = 0
+									if (Exist("CenaNetto"))
+									{
+										if (!Equal([CenaNetto], ""))
+										{
+											$$rodzajCeny = 2
+										}
+									}
+
+									if (Equal($$rodzajCeny, 0))
+									{
+									    if (Exist("WartoscNetto"))
+									    {
+										    if (!Equal([WartoscNetto], ""))
+										    {
+											    $$rodzajCeny = 2
+										    }
+									    }
+									}
+
+									if (Equal($$rodzajCeny, 0))
+									{
+										if (Exist("CenaBrutto"))
+										{
+										    if (!Equal([CenaBrutto], ""))
+										    {
+    											$$rodzajCeny = 1
+                                            }
+										}
+									}
+
+									if (Equal($$rodzajCeny, 0))
+									{
+									    if (Exist("WartoscBrutto"))
+									    {
+										    if (!Equal([WartoscBrutto], ""))
+										    {
+											    $$rodzajCeny = 1
+										    }
+									    }
+									}
+								}
+								Switch ($$rodzajCeny)
+								{
+									Case 1
+										$cena = [CenaBrutto]
+										$wartosc = [WartoscBrutto]
+										Break
+									Case 2
+										$cena = [CenaNetto]
+										$wartosc = [WartoscNetto]
+										Break
+								}
+								if([KwotaAkcyzy])
+								{
+									$akcyza = [KwotaAkcyzy]
+								}
+								MakeSec("stVAT")
+								{
+									$kod = $$stVAT
+								}
+								// [KwotaOpustu]
+								// [GTU]
+								// [PKOB]
+								// [GTIN]
+								// [DataDostawy]
+								// [UnikalnyNumer]
+								// [DodatkoweInfo]
+								if(Equal($$kurs, 0))
+								{
+									$$kurs = [KursWaluty]
+								}
+								// [ZnacznikTowaruLubUslugi]
+								// [WartoscVat]
+								$czyPoKorekcie=1
+								If (Exist("StanPrzed"))
+								{
+									if (Equal([StanPrzed], "true"))
+									{
+										$czyPoKorekcie=0
+                                        if (Equal($$kursPrzedKorekta, 0))
+                                        {
+								            $$kursPrzedKorekta = [KursWaluty]
+                                        }
+									}
+                                    else
+                                    {
+                                        if (Equal($$kursPoKorekcie, 0))
+                                        {
+								            $$kursPoKorekcie = [KursWaluty]
+                                        }
+                                    }
+								}
+								if(Equal($$invoiceType, "KOR"))
+								{
+									if(Equal($czyPoKorekcie, 0))
+									{
+										Info("     przed korekt¹")
+									}
+									else
+									{
+										Info("     po korekcie")
+									}
+								}
+                                if([DataDostawy])
+                                {
+                                    $dataZakupuPozycja = [DataDostawy]
+                                }
+							}
+							Break
+						Case "Rozliczenie"
+							// [KwotaObciazenia]
+							// [PowodObciazenia]
+							// [KwotaOdliczenia]
+							// [PowodOdliczenia]
+							Break
+						Case "Platnosc"
+							// [ZnacznikZaplatyCzesciowej]
+							// [Zaplacono]
+							// [DataZaplaty]
+							// [PlatnoscInna]
+							// [OpisPlatnosci]
+							MakeSec( "rejestr" )
+							{
+								$kod = Cat([FormaPlatnosci]," ", $$Waluta)
+							}
+							MakeSec( "formaPl" )
+							{
+								$nazwa = [FormaPlatnosci]
+								//$termin = "0"
+							}
+							
+							Section("", "", "REPEAT")
+							{
+								Switch(Name())
+								{
+									Case "RachunekBankowy"
+										Section("TRachunekBankowyV3", "", "REPEAT")
+										{
+											$rachunekBankowy = [NrRBPL]
+											if (Equal($rachunekBankowy, ""))
+											{
+												$rachunekBankowy = [NrRBZagr]
+											}
+											// [SWIFT]
+											$nazwaBanku = [NazwaBanku]
+											// [RachunekWlasnyBanku]
+											// [OpisRachunku]
+											Info("  Rachunek bankowy: ", $rachunekBankowy, " ", $nazwaBanku)
+										}
+										Break
+									Case "TerminPlatnosci"
+										Section("TTerminPlatnosciV3", "", "REPEAT")
+										{
+											if (Equal($terminPlatnosci, ""))
+											{
+												$terminPlatnosci = [TerminPlatnosci]
+											}
+											// [TerminPlatnosciOpis]
+										}
+										Break
+									Case "ZaplataCzesciowa"
+										Section("TZaplataCzesciowaV3", "", "REPEAT")
+										{
+											// [Data]
+											// [Kwota]
+										}
+										Break
+								}
+							}
+							Break
+						Case "WarunkiTransakcji"
+							Break
+						Case "Zamowienie"
+							Break
+						Case "Stopka"
+							$$notatka = ""
+							Section("Informacje", "", "REPEAT") 
+							{ 
+								$$notatka = CAT($$notatka, [Informacje], " ")
+							}
+							MakeSec("Notatka_Dl")
+							{
+								$opis = $$notatka
+							}
+							//Case "Rejestry"
+							//	Section("StopkaRejestrV3", "", "REPEAT")
+							//	{
+									// [PelnaNazwa]
+									// [KRS]
+									// [REGON]
+									// [BDO]
+							//	}
+							// Break
+							Break
+						Case Else
+							Warning("Nierozpoznana sekcja: ", Name())
+					}
+				}
+				Switch ($$rodzajCeny)
+				{
+					Case "1"	// Brutto
+					Case "2"	// Netto
+						$rodzajCeny = $$rodzajCeny
+						Break
+					Case Else
+						Warning("Nieropoznany rodzaj ceny, domyœlnie ustawiony na netto.")
+                        $rodzajCeny = "2"
+				}
+                $importKSeFkorektaKursu = 0
+                if (!Equal($$kursPrzedKorekta, $$kursPoKorekcie))
+                {
+                    $importKSeFkorektaKursu = 1
+                    $kursPrzedKorekta = $$kursPrzedKorekta
+                    $kursPoKorekcie = $$kursPoKorekcie
+                }
+    			if (!Equal($$kurs, 0))
+	    			{
+		    			$kurs = $$kurs
+			    		$kursDoch = $$kurs
+                    }
+				}
+			//invoiceV3 END
+		}
+		Section("", "")
+		{
+			Warning("Nierozpoznana sekcja: ", Name())
+		}
+		}
+	}
+	Section("", "")
+	{
+		Warning("Nierozpoznana sekcja: ", Name())
+	}
+}
+Section("", "")
+{
+	Warning("Nierozpoznana sekcja: ", Name())
+}

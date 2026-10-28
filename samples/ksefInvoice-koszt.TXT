@@ -1,0 +1,68 @@
+
+        INFO{
+        Nazwa programu ='Symfonia XSLT' Symfonia Finanse Ksiêgowoœæ
+        Wersja programu =93
+        Wersja szablonu =3.1
+        }
+        
+        Dokument{
+        
+                rodzajDok = zakupu
+        
+	KsefNumber = 5252445719-20260115-A1B2C3D4E5F6-7A
+        
+	KSeFDate = 2026-01-15
+        
+	KSeFStatus = approved
+        
+	eArchiveId = 4B8F2A10-9C3D-4E7F-A1B2-C3D4E5F60001
+        
+	Numer = FV/2026/01/0007
+        
+	DataWystawienia = 2026-01-15
+        
+	DataDostawy = 2026-01-14
+        
+	KodWaluty = PLN
+        
+	RodzajFaktury = VAT
+        
+	mppFlags = false
+                wzorzec = 2
+            
+                kurs = 1
+                    Zapis{
+                    strona =WN
+                    kwota =1000
+                    }
+                    Zapis{
+                    strona =MA
+                    kwota =1230
+                    }
+                    Zapis{
+                    strona =WN
+                    kwota =230
+                    }
+                
+                    
+	Kontrahent{
+                    		NIP = 1180012345
+                    		PelnaNazwa = Dostawca Testowy Sp. z o.o.
+                    		BrakId = false
+                    		KodKraju = PL
+                    		AdresL1 = ul. Przykladowa 12 lok. 3
+                    		AdresL2 = 00-001 Warszawa
+                    		Email = biuro@dostawca-test.pl
+                    		Telefon = 221234567
+                    	}
+                
+                    
+	Rejestr{
+                    		StawkaPodatku = 23
+                    		WartoscNetto = 1000.00
+                    		KwotaVat = 230.00
+                    		KwotaVatKurs = 230.00
+                    	}
+                
+        }
+    

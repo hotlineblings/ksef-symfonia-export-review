@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TEST: faktura SPRZEDAZOWA. invoiceBound=INTERNAL => wzorzec 3 (FVS), Kontrahent = Nabywca (nasz klient).
+     Struktura 1:1 pod SKsefInvoiceImport.xslt (wersja szablonu 3.1). Bez namespace.
+     Kwoty: netto 2000,00 / VAT 23% = 460,00 / brutto 2460,00 -> dekret: WN 2460 (naleznosc), MA 2000 (przychod), MA 460 (VAT). -->
+<ksefInvoice>
+  <invoiceBound>INTERNAL</invoiceBound>
+  <KsefNumber>5252445719-20260116-B2C3D4E5F6A1-8B</KsefNumber>
+  <KSeFDate>2026-01-16</KSeFDate>
+  <KSeFStatus>approved</KSeFStatus>
+  <eArchiveId>4B8F2A10-9C3D-4E7F-A1B2-C3D4E5F60002</eArchiveId>
+  <invoiceV2>
+    <Naglowek>
+      <Numer>FS/2026/01/0021</Numer>
+      <DataWystawienia>2026-01-16</DataWystawienia>
+      <DataDostawy>2026-01-16</DataDostawy>
+      <KodWaluty>PLN</KodWaluty>
+      <RodzajFaktury>VAT</RodzajFaktury>
+    </Naglowek>
+    <Sprzedawca>
+      <DaneIdentyfikacyjne>
+        <NIP>5252445719</NIP>
+        <PelnaNazwa>Nasza Firma Sp. z o.o.</PelnaNazwa>
+        <BrakId>false</BrakId>
+      </DaneIdentyfikacyjne>
+      <Adres>
+        <KodKraju>PL</KodKraju>
+        <AdresL1>ul. Nasza 1</AdresL1>
+        <AdresL2>02-002 Warszawa</AdresL2>
+      </Adres>
+      <DaneKontaktowe>
+        <TDaneKontaktoweV2>
+          <Email>ksiegowosc@nasza-firma.pl</Email>
+          <Telefon>229876543</Telefon>
+        </TDaneKontaktoweV2>
+      </DaneKontaktowe>
+    </Sprzedawca>
+    <Nabywca>
+      <DaneIdentyfikacyjne>
+        <NIP>7010001122</NIP>
+        <PelnaNazwa>Klient Testowy S.A.</PelnaNazwa>
+        <BrakId>false</BrakId>
+      </DaneIdentyfikacyjne>
+      <Adres>
+        <KodKraju>PL</KodKraju>
+        <AdresL1>ul. Klienta 9</AdresL1>
+        <AdresL2>30-300 Krakow</AdresL2>
+      </Adres>
+      <DaneKontaktowe>
+        <TDaneKontaktoweV2>
+          <Email>zakupy@klient-test.pl</Email>
+          <Telefon>126543210</Telefon>
+        </TDaneKontaktoweV2>
+      </DaneKontaktowe>
+    </Nabywca>
+    <PodsumowanieVat>
+      <PodsumowanieVat>
+        <StawkaPodatku>23</StawkaPodatku>
+        <WartoscNetto>2000.00</WartoscNetto>
+        <KwotaVat>460.00</KwotaVat>
+        <KwotaVatKurs>460.00</KwotaVatKurs>
+      </PodsumowanieVat>
+    </PodsumowanieVat>
+    <Wiersze>
+      <WierszV2>
+        <KursWaluty>1</KursWaluty>
+      </WierszV2>
+    </Wiersze>
+    <Adnotacje>
+      <PodzielonaPlatnosc>false</PodzielonaPlatnosc>
+    </Adnotacje>
+  </invoiceV2>
+</ksefInvoice>

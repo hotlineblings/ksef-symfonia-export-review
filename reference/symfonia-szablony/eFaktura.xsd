@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="FormatXML" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+
+	<xs:element name="e-Faktura">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Wersja" type="xs:string" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="DokumentHandlowy">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DataWplywu" type="xs:string" minOccurs="0" />
+				<xs:element name="GUID" type="xs:string" minOccurs="0" />
+				<xs:element name="Status" type="xs:string" minOccurs="0" />
+				<xs:element name="DataWystawieniaDuplikatu" type="xs:string" minOccurs="0" />
+				<xs:element name="NumerDokumentu" type="xs:string" minOccurs="0" />
+				<xs:element name="Nazwa" type="xs:string" minOccurs="0" />
+				<xs:element name="Charakter" type="xs:string" minOccurs="0" />
+				<xs:element name="Typ" type="xs:string" minOccurs="0" />
+				<xs:element name="Seria" type="xs:string" minOccurs="0" />
+				<xs:element name="Wystawca" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="GUIDEDS" type="xs:string" minOccurs="0" />
+							<xs:element name="GUID" type="xs:string" minOccurs="0" />
+							<xs:element name="Kod" type="xs:string" minOccurs="0" />
+							<xs:element name="Nazwa" type="xs:string" minOccurs="0" />
+							<xs:element name="Ulica" type="xs:string" minOccurs="0" />
+							<xs:element name="NumerDomu" type="xs:string" minOccurs="0" />
+							<xs:element name="NumerLokalu" type="xs:string" minOccurs="0" />
+							<xs:element name="KodPocztowy" type="xs:string" minOccurs="0" />
+							<xs:element name="Miejscowosc" type="xs:string" minOccurs="0" />
+							<xs:element name="Wojewodztwo" type="xs:string" minOccurs="0" />
+							<xs:element name="Kraj" type="xs:string" minOccurs="0" />
+							<xs:element name="NIP" type="xs:string" minOccurs="0" />
+							<xs:element name="REGON" type="xs:string" minOccurs="0" />
+							<xs:element name="PESEL" type="xs:string" minOccurs="0" />
+							<xs:element name="VIES" type="xs:string" minOccurs="0" />
+							<xs:element name="VATUE" type="xs:string" minOccurs="0" />
+							<xs:element name="NumerRachunkuBankowego" type="xs:string" minOccurs="0" />
+							<xs:element name="Telefon1" type="xs:string" minOccurs="0" />
+							<xs:element name="Telefon2" type="xs:string" minOccurs="0" />
+							<xs:element name="Fax" type="xs:string" minOccurs="0" />
+							<xs:element name="Email" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Odbiorca" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="GUIDEDS" type="xs:string" minOccurs="0" />
+							<xs:element name="GUID" type="xs:string" minOccurs="0" />
+							<xs:element name="Kod" type="xs:string" minOccurs="0" />
+							<xs:element name="Nazwa" type="xs:string" minOccurs="0" />
+							<xs:element name="Ulica" type="xs:string" minOccurs="0" />
+							<xs:element name="NumerDomu" type="xs:string" minOccurs="0" />
+							<xs:element name="NumerLokalu" type="xs:string" minOccurs="0" />
+							<xs:element name="KodPocztowy" type="xs:string" minOccurs="0" />
+							<xs:element name="Miejscowosc" type="xs:string" minOccurs="0" />
+							<xs:element name="Wojewodztwo" type="xs:string" minOccurs="0" />
+							<xs:element name="Kraj" type="xs:string" minOccurs="0" />
+							<xs:element name="NIP" type="xs:string" minOccurs="0" />
+							<xs:element name="REGON" type="xs:string" minOccurs="0" />
+							<xs:element name="PESEL" type="xs:string" minOccurs="0" />
+							<xs:element name="VIES" type="xs:string" minOccurs="0" />
+							<xs:element name="VATUE" type="xs:string" minOccurs="0" />
+							<xs:element name="NumerRachunkuBankowego" type="xs:string" minOccurs="0" />
+							<xs:element name="Telefon1" type="xs:string" minOccurs="0" />
+							<xs:element name="Telefon2" type="xs:string" minOccurs="0" />
+							<xs:element name="Fax" type="xs:string" minOccurs="0" />
+							<xs:element name="Email" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Rejestr" type="xs:string" minOccurs="0" />
+				<xs:element name="RodzajCeny" type="xs:string" minOccurs="0" />
+				<xs:element name="NaliczanieVAT" type="xs:string" minOccurs="0" />
+				<xs:element name="MetodaRozliczaniaVAT" type="xs:string" minOccurs="0" />
+				<xs:element name="DataWystawienia" type="xs:string" minOccurs="0" />
+				<xs:element name="DataSprzedazy" type="xs:string" minOccurs="0" />
+				<xs:element name="DataWplywu" type="xs:string" minOccurs="0" />
+				<xs:element name="RejestrPlatnosci" type="xs:string" minOccurs="0" />
+				<xs:element name="FormaPlatnosci" type="xs:string" minOccurs="0" />
+				<xs:element name="TerminPlatnosci" type="xs:string" minOccurs="0" />
+				<xs:element name="DataPlatnosci" type="xs:string" minOccurs="0" />
+				<xs:element name="Waluta" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Kod" type="xs:string" minOccurs="0" />
+							<xs:element name="Nazwa" type="xs:string" minOccurs="0" />
+							<xs:element name="Przelicznik" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="KursVAT" type="xs:string" minOccurs="0" />
+				<xs:element name="KursCITPIT" type="xs:string" minOccurs="0" />
+				<xs:element name="OdebranyPrzez" type="xs:string" minOccurs="0" />
+				<xs:element name="StawkaVAT" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Kod" type="xs:string" minOccurs="0" />
+							<xs:element name="Nazwa" type="xs:string" minOccurs="0" />
+							<xs:element name="Wartosc" type="xs:string" minOccurs="0" />
+							<xs:element name="ObowiazujeOd" type="xs:string" minOccurs="0" />
+							<xs:element name="ObowiazujeDo" type="xs:string" minOccurs="0" />
+							<xs:element name="StawkaRR" type="xs:string" minOccurs="0" />
+							<xs:element name="Typ" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Stopka" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="KwotaVAT" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="StawkaVAT" type="xs:string" minOccurs="0" />
+										<xs:element name="Netto" type="xs:string" minOccurs="0" />
+										<xs:element name="VAT" type="xs:string" minOccurs="0" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PozycjaDokumentu" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Lp" type="xs:string" minOccurs="0" />
+							<xs:element name="Towar" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Kod" type="xs:string" minOccurs="0" />
+										<xs:element name="Nazwa" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Opis" type="xs:string" minOccurs="0" />
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="KodPaskowy" type="xs:string" minOccurs="0" />
+										<xs:element name="PKWiU" type="xs:string" minOccurs="0" />
+										<xs:element name="CN" type="xs:string" minOccurs="0" />
+										<xs:element name="JednostkaMiary" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Ewidencyjna" type="xs:string" minOccurs="0" />
+													<xs:element name="Dodatkowa1" type="xs:string" minOccurs="0" />
+													<xs:element name="Przelicznik1" type="xs:string" minOccurs="0" />
+													<xs:element name="Dodatkowa2" type="xs:string" minOccurs="0" />
+													<xs:element name="Przelicznik2" type="xs:string" minOccurs="0" />
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="StawkaVAT" type="xs:string" minOccurs="0" />
+										<xs:element name="Rodzaj" type="xs:string" minOccurs="0" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="JednostkaMiary" type="xs:string" minOccurs="0" />
+							<xs:element name="Ilosc" type="xs:string" minOccurs="0" />
+							<xs:element name="Cena" type="xs:string" minOccurs="0" />
+							<xs:element name="StawkaVAT" type="xs:string" minOccurs="0" />
+							<xs:element name="Wartosc" type="xs:string" minOccurs="0" />
+							<xs:element name="WartoscVAT" type="xs:string" minOccurs="0" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="DokumentZamowienia" substitutionGroup="DokumentHandlowy"/>
+
+
+	<xs:element name="FormatXML" msdata:IsDataSet="true" msdata:Locale="en-US">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="e-Faktura"/>
+				<xs:element ref="DokumentHandlowy"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

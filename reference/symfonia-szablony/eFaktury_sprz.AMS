@@ -1,0 +1,357 @@
+#opis  "Dane z programu RDF, format RDF 1.0", "*.TXT (Pliki tekstowe)"  //
+#format  "AMS"  //
+#opisy  ""  //
+#Disable  "2"  //poziom ostrze¿eñ 1 (m.in. bez ostrze¿enia "Pole nie znalezione")
+#POWIELONE_NAZWY  "1"  //0-zapisuje bez pytania; 1-pyta czy zapisaæ; 2-nie zapisuje
+
+// Szablon jest przeznaczony dla dokumentów sprzeda¿y pochodz¹cych z RDF (FORTE).
+// Zasadniczo kopiuje on wszystkie pola 1:1.
+// XML jest tworzony w P_DOKUMENT::GiveXML. Zmiany tam dokonywane trzeba synchronizowaæ z XSLT i AMS.
+
+Section("dokument", "dokument")
+{
+	$klucz = [skrot]
+	$skrot=[skrot]
+	$numer=[numer]	 // by³o zakomentowane i opisane "automatycznie"
+	$nazwa=[nazwa]
+	$tresc=[tresc]
+	$datawpr=[datawpr]
+	$datadok=[datadok]
+	$dataokr=[dataokr]
+	$dataOper=[dataOper]
+	$datawpl=[datawpl]
+	$idRozrach=[idRozrach] //
+	$kwota=[kwota]
+	$wkwota=[wkwota]
+	$kwotaZRow=[kwotaZRow]
+	$tabela=[tabela] //
+	$typkursu=[typkursu] //
+	$waluta=[waluta]	
+	$nazwaKor=[nazwaKor]	
+	$dataKor=[dataKor]
+	$sygnatura=[sygnatura]
+	$kontrahent=[kontrahent]
+	$nip=[nip]	
+	$automat=[automat]	// by³o zakomentowane i opisane "tego nie wolno ustawiaæ"
+	$flag=[flag]
+	$okresDK=[okresDK]
+	$numerDK=[numerDK]
+	$saldoPoczRK=[saldoPoczRK]
+	$saldoZapRK=[saldoZapRK]
+	$przeksKR=[przeksKR]
+	$wzorzec=[wzorzec]
+	$kwotaPozaRej=[kwotaPozaRej]
+	$kurs=[kurs]
+	$kursEuro=[kursEuro]
+	$idLog=[idLog] // nie by³o
+	$flagi=[flagi]
+	$kwotaDZPB=[kwotaDZPB]
+	$znacznik=[znacznik]
+	$templateId=[templateId]
+	$kontrahentTT=[kontrahentTT]
+	$pozycja=[pozycja]
+	$uid=[uid]
+	$eStatus=[eStatus]
+	$danekh=[danekh]
+	$mppFlags=[mppFlags]
+	$atrJpkV7=[atrJpkV7]
+
+	if ( equal( [skrot], "DIM") )
+    {
+			$dataOdprawy = [datawpl]
+    }
+	$dataWystawieniaKsef = [dataWystawieniaKsef]
+	$numerKsef = [numerKsef] 
+	$guidEarch = [guidEarch]
+	$kontrahentSprzedawcaLubNabywca=[kontrahentSprzedawcaLubNabywca]
+	$daneKhSprzedawcaLubNabywca=[daneKhSprzedawcaLubNabywca]
+	$nipKontrahentSprzedawcaLubNabywca=[nipKontrahentSprzedawcaLubNabywca]
+	
+	//analizujemy wszystkie sekcje (REPEAT) - mog¹ byæ wymieszane
+	Section("", "", "REPEAT")
+	{
+		switch( Translate( Name(), "L") )
+		{
+		case "zapis"
+			MakeSec("zapis")
+			{
+				$idDlaRozliczen=[idDlaRozliczen]
+				$pozycja=[pozycja]
+				$rozbicie=[rozbicie]
+				$typopisu=[typopisu]
+				$typRozb=[typRozb]
+				$kwota=[kwota]
+				$wkwota=[wkwota]
+				$zapisRownolegly=[zapisRownolegly]
+				$strona=[strona]
+				$automat=[automat]
+				$kontoRap=[kontoRap]
+				$dataokr=[dataokr]
+				$dataZap=[dataZap]
+				$waluta=[waluta]
+				$opis=[opis]
+				$synt=[synt]
+				$poz1=[poz1]
+				$poz2=[poz2]
+				$poz3=[poz3]
+				$poz4=[poz4]
+				$poz5=[poz5]
+				$tabela=[tabela] //
+				$kurs=[kurs]
+				$przeks=[przeks]
+				$numerDok=[numerDok]			
+				$nrRozbKP=[nrRozbKP]
+				$typkursu=[typkursu] //
+				$przeksKR=[przeksKR]
+				$kursEuro=[kursEuro]
+				$zapisVat=[zapisVat]
+				$uid=[uid]
+				$dataKPKW=[dataKPKW]
+				Section("", "", "REPEAT")	//REPEAT: analizujemy wszystkie podsekcje
+				{
+					switch( Translate( Name(), "L") )
+					{
+						case "wymiar"
+							MakeSec( "wymiar" )
+							{
+								$kwota=[kwota]
+								$podzial=[podzial]
+								$procent=[procent]
+								$wymiar01=[wymiar01]
+								$wymiar02=[wymiar02]
+								$wymiar03=[wymiar03]
+								$wymiar04=[wymiar04]
+								$wymiar05=[wymiar05]
+								$wymiar06=[wymiar06]
+								$wymiar07=[wymiar07]
+								$wymiar08=[wymiar08]
+								$wymiar09=[wymiar09]
+								$wymiar10=[wymiar10]
+								IF( EXIST( "wymiar11") )	{ $wymiar11=[wymiar11] }
+								IF( EXIST( "wymiar12") )	{ $wymiar12=[wymiar12] }
+								IF( EXIST( "wymiar13") )	{ $wymiar13=[wymiar13] }
+								IF( EXIST( "wymiar14") )	{ $wymiar14=[wymiar14] }
+								IF( EXIST( "wymiar15") )	{ $wymiar15=[wymiar15] }
+								IF( EXIST( "wymiar16") )	{ $wymiar16=[wymiar16] }
+								IF( EXIST( "wymiar17") )	{ $wymiar17=[wymiar17] }
+								IF( EXIST( "wymiar18") )	{ $wymiar18=[wymiar18] }
+								IF( EXIST( "wymiar19") )	{ $wymiar19=[wymiar19] }
+								IF( EXIST( "wymiar20") )	{ $wymiar20=[wymiar20] }
+								IF( EXIST( "wymiar21") )	{ $wymiar21=[wymiar21] }
+								IF( EXIST( "wymiar22") )	{ $wymiar22=[wymiar22] }
+								IF( EXIST( "wymiar23") )	{ $wymiar23=[wymiar23] }
+								IF( EXIST( "wymiar24") )	{ $wymiar24=[wymiar24] }
+								IF( EXIST( "wymiar25") )	{ $wymiar25=[wymiar25] }
+								IF( EXIST( "wymiar26") )	{ $wymiar26=[wymiar26] }
+								IF( EXIST( "wymiar27") )	{ $wymiar27=[wymiar27] }
+								IF( EXIST( "wymiar28") )	{ $wymiar28=[wymiar28] }
+								IF( EXIST( "wymiar29") )	{ $wymiar29=[wymiar29] }
+								IF( EXIST( "wymiar30") )	{ $wymiar30=[wymiar30] }
+								IF( EXIST( "wymiar31") )	{ $wymiar31=[wymiar31] }
+								IF( EXIST( "wymiar32") )	{ $wymiar32=[wymiar32] }
+								IF( EXIST( "wymiar33") )	{ $wymiar33=[wymiar33] }
+								IF( EXIST( "wymiar34") )	{ $wymiar34=[wymiar34] }
+								IF( EXIST( "wymiar35") )	{ $wymiar35=[wymiar35] }
+								IF( EXIST( "wymiar36") )	{ $wymiar36=[wymiar36] }
+								IF( EXIST( "wymiar37") )	{ $wymiar37=[wymiar37] }
+								IF( EXIST( "wymiar38") )	{ $wymiar38=[wymiar38] }
+								IF( EXIST( "wymiar39") )	{ $wymiar39=[wymiar39] }
+								IF( EXIST( "wymiar40") )	{ $wymiar40=[wymiar40] }
+								IF( EXIST( "wymiar41") )	{ $wymiar41=[wymiar41] }
+								IF( EXIST( "wymiar42") )	{ $wymiar42=[wymiar42] }
+								IF( EXIST( "wymiar43") )	{ $wymiar43=[wymiar43] }
+								IF( EXIST( "wymiar44") )	{ $wymiar44=[wymiar44] }
+								IF( EXIST( "wymiar45") )	{ $wymiar45=[wymiar45] }
+								IF( EXIST( "wymiar46") )	{ $wymiar46=[wymiar46] }
+								IF( EXIST( "wymiar47") )	{ $wymiar47=[wymiar47] }
+								IF( EXIST( "wymiar48") )	{ $wymiar48=[wymiar48] }
+								IF( EXIST( "wymiar49") )	{ $wymiar49=[wymiar49] }
+								IF( EXIST( "wymiar50") )	{ $wymiar50=[wymiar50] }
+							}
+					}
+				}
+			}
+			break
+
+		case "rejestr"
+			MakeSec("rejestr")
+			{
+				$fk_ident=[def] // w CImpKom::ZapiszUzgodnioneDane z tego zrobi siê $def
+				$dSkrot=[def]
+				$dNumer=[dNumer]
+				$okres=[okres]
+				$rokDok=[rokDok]
+				$dId=[dId]
+				$kontrahent=[kontrahent]
+				$okrDok=[okrDok]
+				$numerWl=[numerWl]
+				$datadok=[datadok]
+				$dataWS=[dataWS]
+				$nip=[nip]
+				$typabc=[typabc]
+				$Oczek=[Oczek]
+				$nienaliczany=[nienaliczany]
+				$dataKor=[dataKor]
+				$numerKor=[numerKor]
+				$stawka=[stawka]
+				$brutto=[brutto]
+				$netto=[netto]
+				$vat=[vat]
+				$dozaplaty=[dozaplaty]
+				$pozNum=[pozNum]
+				$idRozliczenia=[idRozliczenia]
+				$sOczek=[sOczek]
+				$sygnatura=[sygnatura]
+				$znacznik=[znacznik]
+				$ue=[ue]
+				$usluga=[usluga]
+				$bruttoWaluta=[bruttoWaluta]
+				$nettoWaluta=[nettoWaluta]
+				$vatWaluta=[vatWaluta]
+				$pozycja=[pozycja]
+				$danekh=[danekh]
+				$atrJpkV7=[atrJpkV7]
+				$kodKraju=[KrajKod]
+				$krajDostawy=[krajDostawy]
+				$krajWysylki=[krajWysylki]
+				$rodzajDostawy=[rodzajDostawy]
+				$korektaOSS=[korektaOSS]
+				Section("", "", "REPEAT")	//REPEAT: analizujemy wszystkie podsekcje
+				{
+					switch( Translate( Name(), "L") )
+					{
+						case "pozycja vat"
+							MakeSec( "pozycja vat" )
+							{
+								$stawka=[stawka]
+								$stawka_pl=[stawka_pl]
+								$opis=[opis]
+								$wartosc=[wartosc]
+								$usluga=[usluga]
+								$ue=[ue]
+							}
+					}
+				}
+			}
+			break
+
+		case "transakcja"
+			MakeSec("transakcja")
+			{
+				$typ=[typ] //
+				$flag=[flag] //
+				$synt=[synt] //
+				$poz1=[poz1] //
+				$poz2=[poz2] //
+				$poz3=[poz3] //
+				$poz4=[poz4] //
+				$poz5=[poz5] //
+				$strona=[strona] //
+				$idDlaRozliczen=[idDlaRozliczen] //
+				$transakcja=[transakcja] //
+				$kwota=[kwota] //
+				$wkwota=[wkwota] //
+				$kurs=[kurs] //
+				$waluta=[waluta] //
+				$kwotaEuro=[kwotaEuro] //
+				$wagaEuro=[wagaEuro] //
+				$idBase=[idBase] //
+				$stopa=[stopa]
+				$ustawowe=[ustawowe]
+				$termin=[termin]
+				$zaliczka=[zaliczka]
+				$rachBenef=[rachBenef] //
+				$rach=[rach] //
+				$podstawaRKP=[podstawaRKP] //
+			}
+			break
+
+		case "rozliczenie"
+			MakeSec("rozliczenie")
+			{
+				$typ=[typ] //
+				$flag=[flag] //
+				$synt=[synt] //
+				$poz1=[poz1] //
+				$poz2=[poz2] //
+				$poz3=[poz3] //
+				$poz4=[poz4] //
+				$poz5=[poz5] //
+				$strona=[strona] //
+				$idDlaRozliczen=[idDlaRozliczen] //
+				$transakcja=[transakcja] //
+				$kwota=[kwota] //
+				$wkwota=[wkwota] //
+				$kurs=[kurs] //
+				$waluta=[waluta] //
+				$kwotaEuro=[kwotaEuro] //
+				$wagaEuro=[wagaEuro] //
+				$walutaObca=[walutaObca] //
+				$kursWO=[kursWO]
+				$rozliczonoWO=[rozliczonoWO]
+				$rozliczenie=[rozliczenie]
+				$orgKwota=[orgKwota]
+				$orgKwotaWal=[orgKwotaWal] //
+				$orgKwotaWal=[orgKwotaWal] //
+				$orgStrona=[orgStrona] //
+				$dSymbol = [dSymbol]
+			}
+			break
+
+		case "zlecenie przelewu"
+			MakeSec("ePrzelewy")
+			{
+				$idDlaRozliczen 	= [idDlaRozliczen]
+				$guid			= [guid]
+				$rodzaj			= 1
+			}
+			break			
+
+		case "atrybutwaluta"
+			MakeSec("atrybutwaluta")
+			{
+				$dane=[dane]
+				$data=[data]
+				$waluta=[waluta]
+				$kurs=[kurs]
+                $dataKursu=[dataKursu]
+                $tabelaKursu=[tabelaKursu]
+                $opis=[opis]
+			}
+			break
+
+			case "dokumentkorygowany"
+			MakeSec("dokumentKorygowany")
+			{
+				$nazwaKor=[kod]
+				$dataKor=[data]
+				$guidKor=[guid]
+			}
+			break
+
+			case "korektadokumentu"
+			MakeSec("korektaDokumentu")
+			{
+				$nazwaKor =[kod]
+				$dataKor  =[data]	
+				$guidKor  =[guid]	
+			}
+		}
+	}
+}
+
+
+Section("INFO", "")
+{
+	if ( !equal([Wersja szablonu], "3.1") )
+	{
+		if (  equal(ASK("Wskazany plik danych wymaga innej wersji szablonu importowego. Czy przerwaæ import danych? DefBtn:&Tak=10 Btn:&Nie=C ico:?"), "10") )
+			ERROR("Operacja importu zosta³a przerwana.")
+	}
+}
+
+
+Section("","")
+{
+	Warning("Nierozpoznana sekcja: ", Name())
+}

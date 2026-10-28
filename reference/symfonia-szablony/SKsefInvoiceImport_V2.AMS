@@ -1,0 +1,263 @@
+#opis  "Import faktur z Symfonia KSeF do FKF\F50, format FK 3.0", "*.TXT (Pliki tekstowe)"  //
+#format  "AMS"  //
+#opisy  ""  //
+#Disable  "2"  //poziom ostrze¿eñ 1 (m.in. bez ostrze¿enia "Pole nie znalezione")
+#POWIELONE_NAZWY  "1"  //0-zapisuje bez pytania; 1-pyta czy zapisaæ; 2-nie zapisuje
+#DOMYSLNY_REJESTR "" //rejestr o tej nazwie zostanie u¿yty w przypadku gdy brak go w definicji dokumentu
+#SEPARATOR_01 "."
+#DATA "RRRR-MM-DD"
+#DANEKH  "2" //0-dane z kartoteki, 1-z pliku, 2-dane deklaracyjne z pliku reszta z kartoteki 
+
+Section("INFO", "")
+{
+	if (!equal([Wersja szablonu], "1.0"))
+	{
+		if(equal(ASK("Wskazany plik danych wymaga innej wersji szablonu importowego. Czy przerwaæ import danych? DefBtn:&Tak=10 Btn:&Nie=C ico:?"), "10"))
+			ERROR("Operacja importu zosta³a przerwana.")
+	}
+}
+
+Section("dokument", "dokument")
+{
+	$klucz			= Cat("KSeF: ", [symbol FK])
+	$nazwa			= [Numer]
+	$pochodzenie 	= "KSeF"
+	$rodzaj_dok		= [rodzajDok]
+	$wzorzec		= [wzorzec]
+	$RodzajFaktury	= [RodzajFaktury]
+	$proceduraSME	= [proceduraSME]
+    $znacznik	= [znacznik]
+	$DataDok	= Date(REX([DataWystawienia], "{????/-??/-??}"))
+	$Datawpl	= Date(REX([KSeFDate], "{????/-??/-??}"))
+	$DataOper	= Date(REX([DataOperacji], "{????/-??/-??}"))
+		
+    $tresc	= [opis FK]
+	$flag = [FlagiDokumentu]
+
+	if(Equal(Translate([mppFlags], "L"), "true"))
+		$mppFlags= 1
+
+    $atrJpkV7   = [JPK_V7]
+
+	$waluta		= ""
+	If(!Cat(Equal([KodWaluty], ""), Equal(Translate([KodWaluty], "L"), "pln")))
+	{
+		$waluta		= [KodWaluty]
+		$kurs		= [kurs]
+		$tabela     = [tabela]
+		$TypKursu	= 3
+		
+		MakeSec("atrybutwaluta")
+		{
+			$dane		= "kurs VAT"
+			$data		= [dataVat]
+			$waluta		= [KodWaluty]
+			$kurs		= [kursVat]
+			$dataKursu	= [dataKursu]
+			$tabelaKursu= [tabelaKursuVat]
+		}
+		
+		MakeSec("atrybutwaluta")
+		{
+			$dane	= "kurs CIT/PIT"
+			$data	= [dataCit]
+			$waluta	= [KodWaluty]
+			$kurs	= [kursCit]
+			$dataKursu=[dataKursu]
+			$tabelaKursu=[tabelaKursuCit]
+		}
+	}
+
+	//pola Ksef
+	$guidEarch = [eArchiveId]
+	$statusKsef = 0 //NOT_KSEF_FORMAT
+	Switch(Translate([KSeFStatus], "L"))
+	{
+		Case "notsent"
+			$statusKsef = 30 //NOT_SENT_TO_KSEF
+			Break
+		Case "sending"
+			$statusKsef = 25 //SENDING
+			Break
+		Case "pending"
+			$statusKsef = 50 //PENDING_FOR_VALIDATION_BY_KSEF
+			Break
+		Case "approved"
+			$statusKsef = 60 //APPROVED_BY_KSEF
+			Break
+		Case "rejected"
+			$statusKsef = 70 //REJECTED_BY_KSEF
+			Break
+		Case "error"
+			$statusKsef = 40 //ERROR
+			Break
+	}
+	$$dataWystawieniaKsef = [KSeFDate]
+	$numerKsef = [KsefNumber]
+
+    $checkSprzedawcaLubNabywca = [jestKontrahent2]
+
+	Section("", "", "REPEAT")
+	{
+		switch(Translate(Name(), "L"))
+		{
+			case "incydentalny2"
+			case "kontrahent2"
+				@kthsuffix = "SprzedawcaLubNabywca"
+
+			case "incydentalny"
+			case "kontrahent"
+				@kthsec = Translate(Name(), "L")
+				if (equal(@@kthsec, "kontrahent2"))
+					@kthsec = CAT("Kontrahent", @kthsuffix)
+				else
+				if (equal(@@kthsec, "incydentalny2"))
+					@kthsec = CAT("Incydentalny", @kthsuffix)
+	
+				MakeSec(@kthsec)
+				{
+					$klucz		= Cat([NIP], " ", [PelnaNazwa], " ", [AdresSkrot])
+					$nip		= [NIP]
+					$skrot		= [PelnaNazwa]
+					$nazwa		= [PelnaNazwa]
+					$imie		= [ImiePierwsze]
+					$nazwisko	= [Nazwisko]
+
+					if(Equal($nazwa, ""))
+					{
+						$skrot	= Cat($nazwisko, " ", $imie)
+						$nazwa	= Cat($nazwisko, " ", $imie)
+						if(Equal($nip, ""))
+						{
+							$osfiz	= 2
+							$klucz	= Cat($nazwisko, " ", $imie, " ", [AdresSkrot])
+						}
+						else
+						{
+							$osfiz	= 1	
+						}
+					}
+
+					$krajKod	= [KodKraju]
+					$AdresL1	= [AdresL1]
+					$AdresL2	= [AdresL2]
+					$BrakId		= [BrakId]
+				}
+				break
+
+			case "rejestr"
+				MakeSec("Rejestr")
+				{
+					$klucz = Cat("KSeF: ", [Nazwa])
+
+                    $netto		    = [Netto]
+					$vat		    = [Vat]
+					$brutto		    = [Brutto]
+					$nettoWaluta	= [NettoWaluta]
+					$vatWaluta		= [VatWaluta]
+					$bruttoWaluta	= [BruttoWaluta]
+					
+                    @StawkaPodatku = REX(Translate([StawkaPodatku], "L"), "{vat_}{?#}", @rex2)
+					switch(@StawkaPodatku)
+					{
+						case "np"
+							$stawka	= -2
+							break
+						case "zw"
+							$stawka	= -1
+							break
+						case else
+							$stawka	= @StawkaPodatku
+							break
+					}
+					                            
+				switch ( [ABC] )
+                                {
+                                case "2"
+                                    $ABC		= 2	//B
+                                    break
+                                case "3"
+                                    $ABC		= 4	//C
+                                    break
+                                case "4"
+                                    $ABC		= 8	//D
+                                    break
+                                case else
+                                    $ABC		= 1	//A
+                                    break
+                                }
+                
+                    switch( [metoda_vat] )
+                    {
+                    case "0"
+                        $oczek = 0
+                        break
+                    case "1"
+                        $oczek = 2
+                        break
+                    }
+                                
+					$rozbicie	= [rozbicie]
+                    $dekretacja	= [dekretacja]
+                    $atrJpkV7   = [JPK_V7]
+                    $znacznik	= [znacznik]
+                    $usluga		= [usluga]
+                    $ue		    = [ue]
+				}
+				break
+
+			case "zapis"
+				MakeSec("zapis")
+				{
+					$strona		= Rex([strona], "MA", 1)
+					$kwota		= [kwota]
+					$Konto		= [Konto]
+					$pozycja	= [Pozycja]
+                    $IdDlaRozliczen = [IdDlaRozliczen]
+					$ZapisRownolegly = [ZapisRownolegly]
+                    $cecha      = [cecha]
+                    
+					If(!Equal($$waluta, ""))
+					{
+						$wkwota = [wkwota]
+						$waluta = [waluta]
+						$kurs =	[kurs]
+						$typkursu = 3
+                        $tabela = [tabela]
+					}
+				}
+				break
+
+			case "dokument korygowany"
+				MakeSec("dokumentKorygowany")
+				{
+					$nazwaKor		= [kod]
+					$dataKor		= Date(REX([data], "{????/-??/-??}"))
+					$guidKor		= [guid]
+					$numerKsefKor	= [numerKsef]
+				}
+				break
+
+			case "transakcja"
+				MakeSec("transakcja")
+				{
+					$ustawowe			= [ustawowe] 	//odsetki ustawowe
+					$stopa              = [stopa]		//stopa odsetek
+                    $zaliczka			= 0		        //Zaliczka
+					$idDlaRozliczen 	= [idDlaRozliczen]
+					$termin				= [termin]	//Termin;
+					$kwota				= [kwota]	//Kwota terminu;
+					$znacznik			= [znacznik] //znacznik transakcji
+					$transakcja			= [transakcja] //id transakcji
+					$rachunek			= [rachunek]
+				}
+				break
+            case "uzasadnienie_AI"
+                MakeSec("notatkaDok")
+                {
+                    $opis = [opis]
+                }
+                break
+		}
+	}
+}
